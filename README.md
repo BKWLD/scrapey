@@ -1,6 +1,6 @@
 # Scrapey
 
-Get info about a URL such as you get when sharing a link on Facebook.  It looks at normal meta tags, open graph meta tags, and scrapes images from the page.
+Laravel 3 bundle for getting info about a URL such as you get when sharing a link on Facebook.  It looks at normal meta tags, open graph meta tags, and scrapes images from the page.
 
 ## Usage
 
