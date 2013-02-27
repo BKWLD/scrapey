@@ -66,9 +66,14 @@ class Scrapey {
 		// Collect all the img tags
 		preg_match_all("#<\s*img[^>]*src=(?:'|\")?([^'\"\s]*)(?:'|\")?[^>]*>#i", $html, $matches);
 		if (empty($matches)) return array();
+		$imgs = $matches[1];
+		
+		// Only support the most common image formats
+		$imgs = array_filter($imgs, function($img) {
+			return preg_match('#(jpg|jpeg|gif|png)$#i', $img);
+		});
 		
 		// Prepend domain and url to all images
-		$imgs = $matches[1];
 		$imgs = array_map(function($img) use ($url) {
 			
 			// Do nothing if url has protcal
