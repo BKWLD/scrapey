@@ -4,7 +4,7 @@ Laravel 3 bundle for getting info about a URL such as you get when sharing a lin
 
 ## Usage
 
-	$response = Scrapey::lookup(Input::get('http://www.imdb.com/title/tt0122690'));
+	$response = Scrapey::lookup('http://www.imdb.com/title/tt0122690');
 
 Response looks like:
 
