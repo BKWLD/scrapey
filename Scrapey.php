@@ -33,7 +33,7 @@ class Scrapey {
 		// is the same whether we have to scrape for images or not.
 		$response = new stdClass;
 		foreach($graph as $key => $val) {
-			if ($key == 'image') $response->images = array($val);
+			if ($key == 'image') $response->images = array(self::parse_ref($val, $url));
 			else $response->$key = $val;
 		}
 		
@@ -75,21 +75,42 @@ class Scrapey {
 		
 		// Prepend domain and url to all images
 		$imgs = array_map(function($img) use ($url) {
-			
-			// Do nothing if url has protcal
-			if (preg_match('#^http#i', $img)) return $img;
-			
-			// If a relative path, append the full url
-			if (preg_match('#^[^/]#', $img)) return $url . $img;
-			
-			// If an absolute path, append the protocol
-			preg_match('#^https?://[^/]+#i', $url, $matches);
-			if (preg_match('#^/#', $img)) return $matches[0] . $img;
-			
+			return Scrapey::parse_ref($img, $url);
 		}, $imgs);
 		
 		// Return massaged set of images
 		return $imgs;
+	}
+	
+	/**
+	 * Get a full URL to an image.  This is public so it can be executed by the
+	 * anonymouse function that is created in array_map() above.  In PHP 5.4
+	 * Closure::bind() could be used.
+	 * @param $img A reference to an image
+	 * @param $url The URL that was being looked up
+	 */
+	static public function parse_ref($img, $url) {
+	
+		// Current protocol
+		preg_match('#^(https?)://[^/]+#i', $url, $matches);
+		$protocol = $matches[1];
+		$protocol_and_domain = $matches[0];
+		
+		// Do nothing if url has protocol
+		if (preg_match('#^http#i', $img)) return $img;
+		
+		// If a wildcard protocol (i.e. //domain.com/path/...), match the current protocol
+		if (preg_match('#^//#', $img)) return $protocol . ':' . $img;
+		
+		// If a relative path, append the full url
+		if (preg_match('#^[^/]#', $img)) return $url . $img;
+		
+		// If an absolute path, append the protocol and domain
+		if (preg_match('#^/#', $img)) return $protocol_and_domain . $img;
+		
+		// If it hasn't been catched yet, it's some new condition I haven't accounted for
+		throw new Exception('Unaccounted for ref: '.$img);
+		
 	}
 	
 	/**
