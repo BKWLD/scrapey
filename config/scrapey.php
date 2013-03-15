@@ -6,4 +6,7 @@
 	// The maximum number of images to download
 	'max_imgs' => 6,
 	
+	// If there is an open graph image, still scrape additional ones?
+	'always_scrape_imgs' => true,
+	
 );

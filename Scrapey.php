@@ -38,8 +38,9 @@ class Scrapey {
 		}
 		
 		// If no images were fetched, scrape the page for images
-		if (empty($response->images)) {
-			$response->images = self::scrape_images($url);
+		if (empty($response->images) || Config::get('scrapey::scrapey.always_scrape_imgs')) {
+			if (empty($response->images)) $response->images = array();
+			$response->images = array_merge($response->images, self::scrape_images($url));
 		}
 
 		// Download images to the local filesystem
