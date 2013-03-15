@@ -118,16 +118,17 @@ class Scrapey {
 	 * Download all the images to the local filesystem
 	 */
 	static private function download_images($imgs) {
-		$dir = Config::get('scrapey::scrapey.download_dir');
 		
-		// Limit the number of images that get downloaded
-		$imgs = array_slice($imgs, 0, Config::get('scrapey::scrapey.max_imgs'));
+		// Parse minimum size requiremnt
+		$minimum = Config::get('scrapey::scrapey.minimum_size');
+		if (!empty($minimum)) $minimum = explode('x', $minimum);
 		
 		// Loop through imgs
-		$imgs = array_map(function($img) use ($dir) {
-			
+		$downloads = array();
+		foreach($imgs as $i => $img) {
+						
 			// Figure out where to store the image			
-			$dst = File::make_sub_dirs($dir);
+			$dst = File::make_sub_dirs(Config::get('scrapey::scrapey.download_dir'));
 			$file = uniqid().'.'.strtolower(pathinfo($img, PATHINFO_EXTENSION));
 			$dst .= $file;
 			
@@ -140,13 +141,23 @@ class Scrapey {
 			curl_close($ch);
 			fclose($fp);
 			
-			// Update the path
-			return File::public_path($dst);
+			// Check if the file meets minimum requirements
+			if (!empty($minimum)) {
+				$size = getimagesize($dst);
+				if ($size[0] < $minimum[0] || $size[1] < $minimum[1]) {
+					unlink($dst);
+					continue;
+				}
+			}
 			
-		}, $imgs);
+			// Update the path
+			$downloads[] = File::public_path($dst);
+			if (count($downloads) >= Config::get('scrapey::scrapey.max_imgs')) break;
+			
+		}
 		
 		// Return the images
-		return $imgs;
+		return $downloads;
 		
 	}
 }

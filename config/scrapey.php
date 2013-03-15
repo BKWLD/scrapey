@@ -9,4 +9,8 @@
 	// If there is an open graph image, still scrape additional ones?
 	'always_scrape_imgs' => true,
 	
+	// Set a minimum size for the images that are shown.  This requires
+	// a download_dir to be set.
+	'minimum_size' => '100x100',
+	
 );
