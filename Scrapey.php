@@ -104,7 +104,21 @@ class Scrapey {
 		if (preg_match('#^//#', $img)) return $protocol . ':' . $img;
 		
 		// If a relative path, append the full url
-		if (preg_match('#^[^/]#', $img)) return $url . $img;
+		if (preg_match('#^[^/]#', $img)) {
+		
+			// Get rid of anthing after the last slash.  Thus, the filenmae
+			$url = preg_replace('#[^/]*$#', '', $url);
+			
+			// Foreach ../ in the relative url, delete a directory from the end of the url
+			$img = str_replace('../', '', $img, $count);
+			$url = preg_replace('#[^/]*/$#', '', $url, $count);
+
+			// Get rid of any remaining ./s in the img url
+			$img = str_replace('./', '', $img);
+			
+			// Append what remains of the img path onto what remains of the url
+			return $url . $img;
+		}
 		
 		// If an absolute path, append the protocol and domain
 		if (preg_match('#^/#', $img)) return $protocol_and_domain . $img;
