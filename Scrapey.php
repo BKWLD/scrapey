@@ -27,7 +27,12 @@ class Scrapey {
 		// Look for Open Graph tags as well as standard meta tags.  This call
 		// will get regular title and description metas.
 		$graph = OpenGraph::fetch($url);
-		if (!$graph) return false;
+		if (!$graph) {
+			
+			// Use the domain of the URL as the title
+			if (!Config::get('scrapey::scrapey.default_to_host_as_title')) return false;
+			else $graph = array('title' => parse_url($url, PHP_URL_HOST));
+		}
 		
 		// Make a new object from the response.  Put image in an array so the resposne
 		// is the same whether we have to scrape for images or not.
