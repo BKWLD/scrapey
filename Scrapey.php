@@ -148,7 +148,7 @@ class Scrapey {
 						
 			// Figure out where to store the image			
 			$dst = File::make_sub_dirs(Config::get('scrapey::scrapey.download_dir'));
-			$file = uniqid().'.'.strtolower(pathinfo($img, PATHINFO_EXTENSION));
+			$file = uniqid().'.'.strtolower(pathinfo(parse_url($img, PHP_URL_PATH), PATHINFO_EXTENSION));
 			$dst .= $file;
 			
 			// Download the image
